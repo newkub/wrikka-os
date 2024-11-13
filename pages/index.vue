@@ -67,7 +67,7 @@
 import { Icon } from '@iconify/vue'
 
 const features = [
-  { {
+  {
     title: 'AI Chat',
     icon: 'mdi:chat',
     description: 'Engage with advanced AI models for intelligent conversations and assistance.'

@@ -1,41 +1,25 @@
 <template>
-  <div class="bg-white border-b border-neutral-200 p-3 rounded-t-xl">
-    <div class="flex items-center justify-between mb-3">
-      <button 
-        class="btn-primary"
-        @click="createNewChat"
-      >
-        <Icon icon="mdi:plus" class="text-lg mr-1" />
-        New Chat
-      </button>
-      
-      <div class="flex items-center gap-2">
-        <button 
-          class="p-2 hover:bg-neutral-50 rounded-lg transition-colors text-neutral-600"
-          title="Copy chat link"
-          @click="handleShare"
-        >
-          <Icon icon="mdi:share" class="text-lg" />
-        </button>
-      </div>
-    </div>
-
+  <div class="bg-white border-b border-neutral-200 p-4 rounded-t-xl">
     <div class="flex items-center gap-4">
       <!-- Model Selector Dropdown -->
-      <div class="relative">
+      <div class="relative flex-1">
         <button
           @click="isModelDropdownOpen = !isModelDropdownOpen"
           class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors"
         >
-          <img 
-            :src="getProviderAvatar"
-            class="w-5 h-5 rounded"
-            :alt="getProviderName"
-          />
-          <span class="font-medium">{{ getModelName(modelValue) }}</span>
+          <div class="flex items-center gap-2">
+            <img 
+              :src="getProviderAvatar"
+              class="w-5 h-5 rounded"
+              :alt="getProviderName"
+            />
+            <span class="font-medium">{{ getProviderName }}</span>
+            <span class="text-neutral-500">/</span>
+            <span>{{ getModelName(modelValue) }}</span>
+          </div>
           <Icon 
             :icon="isModelDropdownOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" 
-            class="text-lg text-neutral-500"
+            class="text-lg text-neutral-500 ml-auto"
           />
         </button>
 
@@ -59,6 +43,12 @@
                   src="https://avatars.githubusercontent.com/u/49760167?s=200&v=4"
                   class="w-5 h-5 rounded"
                   alt="Anthropic"
+                />
+                <img
+                  v-else-if="provider.id === 'groq'"
+                  src="https://avatars.githubusercontent.com/u/142387426?s=200&v=4"
+                  class="w-5 h-5 rounded"
+                  alt="Groq"
                 />
                 <Icon
                   v-else-if="provider.id === 'openai'"
@@ -164,6 +154,22 @@
           </div>
         </div>
       </div>
+
+      <button 
+        class="p-2 hover:bg-neutral-50 rounded-lg transition-colors text-neutral-600"
+        title="New Chat"
+        @click="createNewChat"
+      >
+        <Icon icon="mdi:plus" class="text-lg" />
+      </button>
+
+      <button 
+        class="p-2 hover:bg-neutral-50 rounded-lg transition-colors text-neutral-600"
+        title="Copy chat link"
+        @click="handleShare"
+      >
+        <Icon icon="mdi:share" class="text-lg" />
+      </button>
     </div>
   </div>
 </template>
@@ -360,11 +366,9 @@ const createNewChat = () => {
 }
 
 const handleShare = () => {
-  // Copy current chat link to clipboard
   const chatLink = window.location.href
   navigator.clipboard.writeText(chatLink)
     .then(() => {
-      // Show success toast or notification
       console.log('Chat link copied to clipboard')
     })
     .catch(err => {
