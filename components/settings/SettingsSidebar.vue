@@ -69,7 +69,8 @@ defineEmits<{
 const generalSettings = [
   { id: 'appearance', label: 'Appearance', icon: 'mdi:palette' },
   { id: 'keyboard-shortcuts', label: 'Keyboard Shortcuts', icon: 'mdi:keyboard' },
-  { id: 'voice-input', label: 'Voice Input', icon: 'mdi:microphone' }
+  { id: 'voice-input', label: 'Voice Input', icon: 'mdi:microphone' },
+  { id: 'notifications', label: 'Notifications', icon: 'mdi:bell' }
 ]
 
 const aiSettings = [
@@ -80,8 +81,7 @@ const aiSettings = [
 
 const accountSettings = [
   { id: 'profile', label: 'Profile', icon: 'mdi:account' },
-  { id: 'billing', label: 'Billing', icon: 'mdi:credit-card' },
-  { id: 'notifications', label: 'Notifications', icon: 'mdi:bell' }
+  { id: 'billing', label: 'Billing', icon: 'mdi:credit-card' }
 ]
 </script>
 

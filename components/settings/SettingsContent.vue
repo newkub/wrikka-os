@@ -16,9 +16,12 @@
 <script setup lang="ts">
 import AppearanceSettings from './sections/AppearanceSettings.vue'
 import KeyboardShortcuts from './sections/KeyboardShortcuts.vue'
+import VoiceInputSettings from './sections/VoiceInputSettings.vue'
+import NotificationSettings from './sections/NotificationSettings.vue'
 import ApiKeys from './sections/ApiKeys.vue'
 import ModelsSettings from './sections/ModelsSettings.vue'
 import BillingSettings from './sections/BillingSettings.vue'
+import ProfileSettings from './sections/ProfileSettings.vue'
 
 const props = defineProps<{
   section: string
@@ -35,6 +38,16 @@ const sectionInfo = {
     description: 'Configure keyboard shortcuts for quick access',
     component: KeyboardShortcuts
   },
+  'voice-input': {
+    title: 'Voice Input',
+    description: 'Configure voice input settings and commands',
+    component: VoiceInputSettings
+  },
+  notifications: {
+    title: 'Notifications',
+    description: 'Manage notification preferences and settings',
+    component: NotificationSettings
+  },
   'api-keys': {
     title: 'API Keys',
     description: 'Manage your API keys for different providers',
@@ -44,6 +57,11 @@ const sectionInfo = {
     title: 'Models',
     description: 'Configure and manage AI models',
     component: ModelsSettings
+  },
+  profile: {
+    title: 'Profile',
+    description: 'Manage your profile information',
+    component: ProfileSettings
   },
   billing: {
     title: 'Billing',
