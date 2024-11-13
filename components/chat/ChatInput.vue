@@ -14,7 +14,7 @@
     />
     
     <!-- Slash Commands Menu -->
-    <div v-if="showSlashCommands" 
+    <div v-if="showSlashCommands && inputValue.endsWith('/')" 
       class="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-lg shadow-lg border border-neutral-200 max-h-64 overflow-y-auto">
       <div class="p-2">
         <div v-for="command in filteredCommands" 
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Mention Menu -->
-    <div v-if="showMentions"
+    <div v-if="showMentions && inputValue.endsWith('@')"
       class="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-lg shadow-lg border border-neutral-200 max-h-64 overflow-y-auto">
       <div class="p-2">
         <div v-for="user in filteredUsers" 
@@ -146,7 +146,7 @@ const canSend = computed(() =>
 const handleInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement
   const value = target.value
-  const lastChar = value[target.selectionStart - 1]
+  const lastChar = value[value.length - 1]
   
   if (lastChar === '/') {
     showSlashCommands.value = true
@@ -157,19 +157,8 @@ const handleInput = (event: Event) => {
     showSlashCommands.value = false
     mentionSearch.value = ''
   } else {
-    // Update search terms if menus are open
-    if (showSlashCommands.value) {
-      const slashIndex = value.lastIndexOf('/')
-      if (slashIndex >= 0) {
-        commandSearch.value = value.slice(slashIndex + 1)
-      }
-    }
-    if (showMentions.value) {
-      const mentionIndex = value.lastIndexOf('@')
-      if (mentionIndex >= 0) {
-        mentionSearch.value = value.slice(mentionIndex + 1)
-      }
-    }
+    showSlashCommands.value = false
+    showMentions.value = false
   }
   
   adjustHeight()

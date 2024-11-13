@@ -1,123 +1,169 @@
 <template>
-  <div class="bg-white border-b border-neutral-200 p-3 rounded-t-xl flex items-center gap-4">
-    <!-- Model Selector Dropdown -->
-    <div class="relative">
-      <button
-        @click="isModelDropdownOpen = !isModelDropdownOpen"
-        class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors"
+  <div class="bg-white border-b border-neutral-200 p-3 rounded-t-xl">
+    <div class="flex items-center justify-between mb-3">
+      <button 
+        class="btn-primary"
+        @click="createNewChat"
       >
-        <img 
-          :src="getProviderAvatar"
-          class="w-5 h-5 rounded"
-          :alt="getProviderName"
-        />
-        <span class="font-medium">{{ getModelName(modelValue) }}</span>
-        <Icon 
-          :icon="isModelDropdownOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" 
-          class="text-lg text-neutral-500"
-        />
+        <Icon icon="mdi:plus" class="text-lg mr-1" />
+        New Chat
       </button>
+      
+      <div class="flex items-center gap-2">
+        <button 
+          class="p-2 hover:bg-neutral-50 rounded-lg transition-colors text-neutral-600"
+          title="Copy chat link"
+          @click="handleShare"
+        >
+          <Icon icon="mdi:share" class="text-lg" />
+        </button>
+      </div>
+    </div>
 
-      <div
-        v-if="isModelDropdownOpen"
-        class="absolute z-50 w-64 mt-1 bg-white border border-neutral-200 rounded-lg shadow-lg"
-      >
-        <div class="p-2 border-b border-neutral-200">
-          <input
-            v-model="modelSearch"
-            type="text"
-            placeholder="Search models..."
-            class="w-full p-2 bg-neutral-50 rounded-lg text-sm"
+    <div class="flex items-center gap-4">
+      <!-- Model Selector Dropdown -->
+      <div class="relative">
+        <button
+          @click="isModelDropdownOpen = !isModelDropdownOpen"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors"
+        >
+          <img 
+            :src="getProviderAvatar"
+            class="w-5 h-5 rounded"
+            :alt="getProviderName"
           />
-        </div>
-        <div class="max-h-64 overflow-y-auto p-2">
-          <div v-for="provider in filteredProviders" :key="provider.id" class="mb-2">
-            <div class="flex items-center gap-2 p-1">
-              <img
-                :src="provider.id === 'anthropic' ? 
-                  'https://avatars.githubusercontent.com/u/49760167?s=200&v=4' :
-                  'https://avatars.githubusercontent.com/u/142387426?s=200&v=4'"
-                class="w-5 h-5 rounded"
-                :alt="provider.name"
-              />
-              <span class="text-sm font-medium">{{ provider.name }}</span>
+          <span class="font-medium">{{ getModelName(modelValue) }}</span>
+          <Icon 
+            :icon="isModelDropdownOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" 
+            class="text-lg text-neutral-500"
+          />
+        </button>
+
+        <div
+          v-if="isModelDropdownOpen"
+          class="absolute z-50 w-64 mt-1 bg-white border border-neutral-200 rounded-lg shadow-lg"
+        >
+          <div class="p-2 border-b border-neutral-200">
+            <input
+              v-model="modelSearch"
+              type="text"
+              placeholder="Search models..."
+              class="w-full p-2 bg-neutral-50 rounded-lg text-sm"
+            />
+          </div>
+          <div class="max-h-64 overflow-y-auto p-2">
+            <div v-for="provider in filteredProviders" :key="provider.id" class="mb-2">
+              <div class="flex items-center gap-2 p-1">
+                <img
+                  v-if="provider.id === 'anthropic'"
+                  src="https://avatars.githubusercontent.com/u/49760167?s=200&v=4"
+                  class="w-5 h-5 rounded"
+                  alt="Anthropic"
+                />
+                <Icon
+                  v-else-if="provider.id === 'openai'"
+                  icon="simple-icons:openai"
+                  class="w-5 h-5"
+                />
+                <span class="text-sm font-medium">{{ provider.name }}</span>
+              </div>
+              <div class="space-y-1 ml-6">
+                <button
+                  v-for="model in provider.models"
+                  :key="model.id"
+                  @click="selectModel(model.id)"
+                  class="w-full text-left px-3 py-1.5 rounded-lg hover:bg-neutral-50 transition-colors text-sm"
+                  :class="modelValue === model.id ? 'bg-neutral-100' : ''"
+                >
+                  {{ model.name }}
+                </button>
+              </div>
             </div>
-            <div class="space-y-1 ml-6">
+          </div>
+        </div>
+      </div>
+
+      <!-- History Dropdown -->
+      <div class="relative">
+        <button
+          @click="isHistoryDropdownOpen = !isHistoryDropdownOpen"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors"
+        >
+          <Icon icon="mdi:history" class="text-lg" />
+          <span class="font-medium">{{ selectedChat?.title || 'History' }}</span>
+          <Icon 
+            :icon="isHistoryDropdownOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" 
+            class="text-lg text-neutral-500"
+          />
+        </button>
+
+        <div
+          v-if="isHistoryDropdownOpen"
+          class="absolute z-50 w-64 mt-1 bg-white border border-neutral-200 rounded-lg shadow-lg"
+        >
+          <div class="p-2 border-b border-neutral-200">
+            <input
+              v-model="historySearch"
+              type="text"
+              placeholder="Search conversations..."
+              class="w-full p-2 bg-neutral-50 rounded-lg text-sm"
+            />
+          </div>
+          <div class="max-h-64 overflow-y-auto p-2">
+            <div v-for="chat in filteredHistory" :key="chat.id" class="mb-2">
               <button
-                v-for="model in provider.models"
-                :key="model.id"
-                @click="selectModel(model.id)"
-                class="w-full text-left px-3 py-1.5 rounded-lg hover:bg-neutral-50 transition-colors text-sm"
-                :class="modelValue === model.id ? 'bg-neutral-100' : ''"
+                class="w-full text-left p-2 rounded-lg hover:bg-neutral-50 transition-colors"
+                @click="selectChat(chat)"
+                :class="selectedChat?.id === chat.id ? 'bg-neutral-100' : ''"
               >
-                {{ model.name }}
+                <div class="flex items-center gap-2 mb-1">
+                  <Icon :icon="chat.model.icon" class="text-lg" />
+                  <span class="text-sm font-medium">{{ chat.title }}</span>
+                </div>
+                <p class="text-xs text-neutral-500 truncate">
+                  {{ chat.messages[chat.messages.length - 1]?.content }}
+                </p>
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- History Dropdown -->
-    <div class="relative">
-      <button
-        @click="isHistoryDropdownOpen = !isHistoryDropdownOpen"
-        class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors"
-      >
-        <Icon icon="mdi:history" class="text-lg" />
-        <span class="font-medium">{{ selectedChat?.title || 'History' }}</span>
-        <Icon 
-          :icon="isHistoryDropdownOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" 
-          class="text-lg text-neutral-500"
-        />
-      </button>
-
-      <div
-        v-if="isHistoryDropdownOpen"
-        class="absolute z-50 w-64 mt-1 bg-white border border-neutral-200 rounded-lg shadow-lg"
-      >
-        <div class="p-2 border-b border-neutral-200">
-          <input
-            v-model="historySearch"
-            type="text"
-            placeholder="Search conversations..."
-            class="w-full p-2 bg-neutral-50 rounded-lg text-sm"
+      <!-- Presets Dropdown -->
+      <div class="relative">
+        <button
+          @click="isPresetsDropdownOpen = !isPresetsDropdownOpen"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors"
+        >
+          <Icon icon="mdi:bookmark" class="text-lg" />
+          <span class="font-medium">{{ selectedPreset?.name || 'Presets' }}</span>
+          <Icon 
+            :icon="isPresetsDropdownOpen ? 'mdi:chevron-up' : 'mdi:chevron-down'" 
+            class="text-lg text-neutral-500"
           />
-        </div>
-        <div class="max-h-64 overflow-y-auto p-2">
-          <div v-for="chat in filteredHistory" :key="chat.id" class="mb-2">
-            <button
-              class="w-full text-left p-2 rounded-lg hover:bg-neutral-50 transition-colors"
-              @click="selectChat(chat)"
-              :class="selectedChat?.id === chat.id ? 'bg-neutral-100' : ''"
-            >
-              <div class="flex items-center gap-2 mb-1">
-                <Icon :icon="chat.model.icon" class="text-lg" />
-                <span class="text-sm font-medium">{{ chat.title }}</span>
-              </div>
-              <p class="text-xs text-neutral-500 truncate">
-                {{ chat.messages[chat.messages.length - 1]?.content }}
-              </p>
-            </button>
+        </button>
+
+        <div
+          v-if="isPresetsDropdownOpen"
+          class="absolute z-50 w-64 mt-1 bg-white border border-neutral-200 rounded-lg shadow-lg"
+        >
+          <div class="p-2">
+            <div v-for="preset in presets" :key="preset.id" class="mb-2">
+              <button
+                class="w-full text-left p-2 rounded-lg hover:bg-neutral-50 transition-colors"
+                @click="selectPreset(preset)"
+                :class="selectedPreset?.id === preset.id ? 'bg-neutral-100' : ''"
+              >
+                <div class="flex items-center gap-2">
+                  <Icon :icon="preset.icon" class="text-lg" />
+                  <span class="font-medium">{{ preset.name }}</span>
+                </div>
+                <p class="text-xs text-neutral-500 mt-1">{{ preset.description }}</p>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex items-center gap-2 ml-auto">
-      <button 
-        class="p-2 hover:bg-neutral-50 rounded-lg transition-colors text-neutral-600"
-        @click="createNewChat"
-      >
-        <Icon icon="mdi:plus" class="text-lg" />
-      </button>
-      <button 
-        class="p-2 hover:bg-neutral-50 rounded-lg transition-colors text-neutral-600"
-        @click="handleShare"
-      >
-        <Icon icon="mdi:share" class="text-lg" />
-      </button>
     </div>
   </div>
 </template>
@@ -139,6 +185,13 @@ interface ChatHistory {
   }>
 }
 
+interface Preset {
+  id: string
+  name: string
+  icon: string
+  description: string
+}
+
 const props = defineProps<{
   modelValue: string
   selectedChat: ChatHistory | null
@@ -151,8 +204,31 @@ const emit = defineEmits<{
 
 const isModelDropdownOpen = ref(false)
 const isHistoryDropdownOpen = ref(false)
+const isPresetsDropdownOpen = ref(false)
 const modelSearch = ref('')
 const historySearch = ref('')
+const selectedPreset = ref<Preset | null>(null)
+
+const presets = [
+  {
+    id: 'writing',
+    name: 'Writing Assistant',
+    icon: 'mdi:pencil',
+    description: 'Help with writing and editing'
+  },
+  {
+    id: 'coding',
+    name: 'Code Assistant',
+    icon: 'mdi:code-braces',
+    description: 'Programming help and code review'
+  },
+  {
+    id: 'research',
+    name: 'Research Assistant',
+    icon: 'mdi:book-search',
+    description: 'Help with research and analysis'
+  }
+]
 
 const chatHistory = ref<ChatHistory[]>([
   {
@@ -264,6 +340,11 @@ const selectChat = (chat: ChatHistory) => {
   isHistoryDropdownOpen.value = false
 }
 
+const selectPreset = (preset: Preset) => {
+  selectedPreset.value = preset
+  isPresetsDropdownOpen.value = false
+}
+
 const createNewChat = () => {
   const newChat: ChatHistory = {
     id: Date.now(),
@@ -279,7 +360,16 @@ const createNewChat = () => {
 }
 
 const handleShare = () => {
-  // Implement share functionality
+  // Copy current chat link to clipboard
+  const chatLink = window.location.href
+  navigator.clipboard.writeText(chatLink)
+    .then(() => {
+      // Show success toast or notification
+      console.log('Chat link copied to clipboard')
+    })
+    .catch(err => {
+      console.error('Failed to copy chat link:', err)
+    })
 }
 
 // Close dropdowns when clicking outside
@@ -289,6 +379,7 @@ onMounted(() => {
     if (!target.closest('.relative')) {
       isModelDropdownOpen.value = false
       isHistoryDropdownOpen.value = false
+      isPresetsDropdownOpen.value = false
     }
   }
   

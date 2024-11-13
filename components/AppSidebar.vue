@@ -1,7 +1,7 @@
 <template>
   <nav class="h-screen w-20 bg-surface border-r border-border flex flex-col items-center py-4">
     <div class="flex flex-col items-center gap-6">
-      <!-- Updated Wrikka OS Logo to be clickable like other nav items -->
+      <!-- Updated Wrikka OS Logo -->
       <NuxtLink 
         to="/"
         class="w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors hover:bg-neutral-100"
@@ -13,7 +13,7 @@
 
       <div class="flex flex-col items-center gap-4">
         <NuxtLink 
-          v-for="item in topMenuItems" 
+          v-for="item in menuItems" 
           :key="item.path"
           :to="item.path"
           class="w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors hover:bg-neutral-100"
@@ -45,8 +45,10 @@ import { Icon } from '@iconify/vue'
 
 const route = useRoute()
 
-const topMenuItems = [
+const menuItems = [
   { path: '/chat', label: 'Chat', icon: 'mdi:chat' },
+  { path: '/images', label: 'Images', icon: 'mdi:image' },
+  { path: '/videos', label: 'Videos', icon: 'mdi:video' },
   { path: '/bots', label: 'Bots', icon: 'mdi:apps' },
   { path: '/canvas', label: 'Canvas', icon: 'mdi:brush' },
   { path: '/bookmark', label: 'Bookmark', icon: 'mdi:bookmark' }
