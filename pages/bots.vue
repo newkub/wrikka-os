@@ -5,14 +5,14 @@
       <div class="flex items-center gap-2">
         <button 
           class="px-3 py-1.5 rounded-lg font-medium transition-colors"
-          :class="activeTab === 'explore' ? 'bg-primary-500 text-white' : 'hover:bg-neutral-100'"
+          :class="activeTab === 'explore' ? 'bg-primary-base text-white hover:bg-primary-dark' : 'hover:bg-neutral-light'"
           @click="activeTab = 'explore'"
         >
           Explore
         </button>
         <button 
           class="px-3 py-1.5 rounded-lg font-medium transition-colors"
-          :class="activeTab === 'my-bots' ? 'bg-primary-500 text-white' : 'hover:bg-neutral-100'"
+          :class="activeTab === 'my-bots' ? 'bg-primary-base text-white hover:bg-primary-dark' : 'hover:bg-neutral-light'"
           @click="activeTab = 'my-bots'"
         >
           My Bots
@@ -34,7 +34,7 @@
         v-model="searchQuery"
         type="text"
         placeholder="Search bots..."
-        class="w-full pl-12 pr-4 py-3 bg-white border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+        class="w-full pl-12 pr-4 py-3 bg-white border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-base"
       />
     </div>
 
@@ -44,7 +44,7 @@
         v-for="category in categories" 
         :key="category.id"
         class="px-3 py-1.5 text-sm rounded-lg transition-colors whitespace-nowrap"
-        :class="selectedCategory === category.id ? 'bg-primary-500 text-white' : 'bg-neutral-100 hover:bg-neutral-200'"
+        :class="selectedCategory === category.id ? 'bg-primary-base text-white hover:bg-primary-dark' : 'bg-neutral-100 hover:bg-neutral-200'"
         @click="selectedCategory = category.id"
       >
         {{ category.name }}
@@ -61,8 +61,8 @@
           class="bg-white p-4 rounded-xl border border-neutral-200 hover:shadow-md transition-shadow"
         >
           <div class="flex gap-3">
-            <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Icon :icon="bot.icon" class="text-xl text-primary-600" />
+            <div class="w-10 h-10 bg-primary-light rounded-lg flex items-center justify-center flex-shrink-0">
+              <Icon :icon="bot.icon" class="text-xl text-primary-dark" />
             </div>
             <div>
               <h3 class="text-lg font-semibold mb-1">{{ bot.name }}</h3>
@@ -84,8 +84,8 @@
           class="bg-white p-4 rounded-xl border border-neutral-200 hover:shadow-md transition-shadow"
         >
           <div class="flex gap-3">
-            <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Icon :icon="bot.icon" class="text-xl text-primary-600" />
+            <div class="w-10 h-10 bg-primary-light rounded-lg flex items-center justify-center flex-shrink-0">
+              <Icon :icon="bot.icon" class="text-xl text-primary-dark" />
             </div>
             <div>
               <h3 class="text-lg font-semibold mb-1">{{ bot.name }}</h3>
@@ -94,7 +94,7 @@
                 <span 
                   v-for="tag in bot.tags" 
                   :key="tag"
-                  class="px-2 py-0.5 bg-neutral-100 rounded text-xs text-neutral-600"
+                  class="px-2 py-0.5 bg-neutral-100 rounded text-xs text-neutral-dark"
                 >
                   {{ tag }}
                 </span>
