@@ -21,6 +21,7 @@
           :to="item.path"
           class="w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors hover:bg-neutral-100"
           :class="{ 'bg-neutral-200': route.path === item.path }"
+          active-class="bg-neutral-200"
         >
           <Icon :icon="item.icon" class="text-2xl text-neutral-700" />
           <span class="text-xs font-medium text-neutral-700">{{ item.label }}</span>
@@ -36,6 +37,7 @@
         :to="item.path"
         class="w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors hover:bg-neutral-100"
         :class="{ 'bg-neutral-200': route.path === item.path }"
+        active-class="bg-neutral-200"
       >
         <Icon :icon="item.icon" class="text-2xl text-neutral-700" />
         <span class="text-xs font-medium text-neutral-700">{{ item.label }}</span>

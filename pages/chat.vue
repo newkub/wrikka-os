@@ -1,20 +1,20 @@
 <template>
-  <div class="h-full bg-neutral-50">
-    <div class="h-full max-w-7xl mx-auto">
+  <div class="h-screen bg-neutral-50 overflow-hidden">
+    <div class="h-full max-w-7xl mx-auto px-4">
       <ChatHeader 
         @select-chat="handleChatSelect" 
         v-model:selected-model="selectedModel"
         :selected-chat="selectedChat"
       />
-      <div class="flex gap-4 h-[calc(100%-4rem)] mt-4">
-        <div class="flex-1 bg-white rounded-xl shadow-sm h-full">
+      <div class="flex gap-4 h-[calc(100%-4rem)] mt-4 overflow-hidden">
+        <div class="flex-1 bg-white rounded-xl shadow-sm min-h-0">
           <ChatContainer 
             :selected-model="selectedModel"
             :messages="currentMessages"
             @update:messages="updateMessages"
           />
         </div>
-        <div class="w-80 bg-white rounded-xl shadow-sm h-full">
+        <div class="w-80 bg-white rounded-xl shadow-sm min-h-0">
           <ChatSidebar />
         </div>
       </div>
