@@ -1,7 +1,7 @@
 <template>
-  <nav class="h-screen w-20 bg-surface border-r border-border flex flex-col items-center py-4">
-    <div class="flex flex-col items-center gap-6">
-      <!-- Updated Home Logo -->
+  <nav class="fixed left-0 top-0 h-screen w-20 bg-surface border-r border-border flex flex-col items-center py-4 overflow-hidden">
+    <!-- Fixed Logo Section -->
+    <div class="flex-shrink-0">
       <NuxtLink 
         to="/"
         class="w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors hover:bg-neutral-100"
@@ -10,7 +10,10 @@
         <Icon icon="mdi:home" class="text-2xl text-primary-600" />
         <span class="text-xs font-medium text-neutral-700">Home</span>
       </NuxtLink>
+    </div>
 
+    <!-- Scrollable Menu Section -->
+    <div class="flex-1 overflow-y-auto w-full px-3 my-4 scrollbar-thin">
       <div class="flex flex-col items-center gap-4">
         <NuxtLink 
           v-for="item in menuItems" 
@@ -25,7 +28,8 @@
       </div>
     </div>
     
-    <div class="flex flex-col items-center gap-4 mt-auto">
+    <!-- Fixed Bottom Section -->
+    <div class="flex-shrink-0 flex flex-col items-center gap-4">
       <NuxtLink 
         v-for="item in bottomMenuItems" 
         :key="item.path"
@@ -59,3 +63,32 @@ const bottomMenuItems = [
   { path: '/settings', label: 'Settings', icon: 'mdi:cog' }
 ]
 </script>
+
+<style scoped>
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #E5E7EB transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #E5E7EB;
+  border-radius: 2px;
+}
+
+/* Hide scrollbar when not hovering */
+.scrollbar-thin:not(:hover)::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.scrollbar-thin:not(:hover) {
+  scrollbar-color: transparent transparent;
+}
+</style>
