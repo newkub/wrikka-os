@@ -1,16 +1,16 @@
 <template>
-  <nav class="w-64 bg-white border-r border-neutral-200 h-[calc(100vh-2rem)] overflow-y-auto sticky top-0">
+  <nav class="w-64 bg-white border-r border-neutral-light h-[calc(100vh-2rem)] overflow-y-auto sticky top-0">
     <div class="p-4">
       <!-- General Settings -->
       <div class="mb-6">
-        <h3 class="text-neutral-500 text-sm font-medium mb-2">General</h3>
+        <h3 class="text-neutral-base text-sm font-medium mb-2">General</h3>
         <div class="space-y-1">
           <button
             v-for="item in generalSettings"
             :key="item.id"
             @click="$emit('select', item.id)"
             class="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2"
-            :class="selectedSection === item.id ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'"
+            :class="selectedSection === item.id ? 'bg-neutral-light text-neutral-base' : 'text-neutral-base hover:bg-neutral-light hover:text-neutral-base'"
           >
             <Icon :icon="item.icon" class="text-lg" />
             {{ item.label }}
@@ -19,15 +19,32 @@
       </div>
 
       <!-- AI Settings -->
-      <div>
-        <h3 class="text-neutral-500 text-sm font-medium mb-2">AI</h3>
+      <div class="mb-6">
+        <h3 class="text-neutral-base text-sm font-medium mb-2">AI</h3>
         <div class="space-y-1">
           <button
             v-for="item in aiSettings"
             :key="item.id"
             @click="$emit('select', item.id)"
             class="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2"
-            :class="selectedSection === item.id ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'"
+            :class="selectedSection === item.id ? 'bg-neutral-light text-neutral-base' : 'text-neutral-base hover:bg-neutral-light hover:text-neutral-base'"
+          >
+            <Icon :icon="item.icon" class="text-lg" />
+            {{ item.label }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Account Settings -->
+      <div>
+        <h3 class="text-neutral-base text-sm font-medium mb-2">Account</h3>
+        <div class="space-y-1">
+          <button
+            v-for="item in accountSettings"
+            :key="item.id"
+            @click="$emit('select', item.id)"
+            class="w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2"
+            :class="selectedSection === item.id ? 'bg-neutral-light text-neutral-base' : 'text-neutral-base hover:bg-neutral-light hover:text-neutral-base'"
           >
             <Icon :icon="item.icon" class="text-lg" />
             {{ item.label }}
@@ -59,6 +76,12 @@ const aiSettings = [
   { id: 'models', label: 'Models', icon: 'mdi:robot' },
   { id: 'extensions', label: 'Extensions', icon: 'mdi:puzzle' },
   { id: 'api-keys', label: 'API Keys', icon: 'mdi:key' }
+]
+
+const accountSettings = [
+  { id: 'profile', label: 'Profile', icon: 'mdi:account' },
+  { id: 'billing', label: 'Billing', icon: 'mdi:credit-card' },
+  { id: 'notifications', label: 'Notifications', icon: 'mdi:bell' }
 ]
 </script>
 

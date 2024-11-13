@@ -4,7 +4,7 @@
       <!-- Section Header -->
       <div class="mb-8">
         <h1 class="text-2xl font-bold mb-2">{{ sectionTitle }}</h1>
-        <p class="text-neutral-600">{{ sectionDescription }}</p>
+        <p class="text-neutral-base">{{ sectionDescription }}</p>
       </div>
 
       <!-- Section Content -->
@@ -18,6 +18,7 @@ import AppearanceSettings from './sections/AppearanceSettings.vue'
 import KeyboardShortcuts from './sections/KeyboardShortcuts.vue'
 import ApiKeys from './sections/ApiKeys.vue'
 import ModelsSettings from './sections/ModelsSettings.vue'
+import BillingSettings from './sections/BillingSettings.vue'
 
 const props = defineProps<{
   section: string
@@ -43,6 +44,11 @@ const sectionInfo = {
     title: 'Models',
     description: 'Configure and manage AI models',
     component: ModelsSettings
+  },
+  billing: {
+    title: 'Billing',
+    description: 'Manage your billing information and view transaction history',
+    component: BillingSettings
   }
 }
 
