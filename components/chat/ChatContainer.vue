@@ -14,7 +14,7 @@
       
       <template v-else>
         <div v-for="msg in messages" :key="msg.id" class="mb-6 last:mb-0">
-          <ChatMessage :message="msg" />
+          <ChatMessage :message="msg" :selected-model="selectedModel" />
         </div>
       </template>
     </div>
@@ -32,16 +32,22 @@
 
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { ref, watch, nextTick, onMounted } from 'vue'
 
 interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
-  timestamp: Date
 }
 
-const messages = ref<Message[]>([])
+const props = defineProps<{
+  selectedModel: string
+  messages: Message[]
+}>()
+
+const emit = defineEmits<{
+  'update:messages': [messages: Message[]]
+}>()
+
 const inputMessage = ref('')
 const isLoading = ref(false)
 const messagesRef = ref<HTMLElement>()
@@ -55,42 +61,36 @@ const scrollToBottom = () => {
 }
 
 const handleSend = async (content: string) => {
+  const newMessages = [...props.messages]
+  
   // Add user message
-  messages.value.push({
+  newMessages.push({
     id: Date.now().toString(),
     role: 'user',
-    content,
-    timestamp: new Date()
+    content
   })
+
+  emit('update:messages', newMessages)
 
   // Simulate AI response
   isLoading.value = true
   try {
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    messages.value.push({
+    newMessages.push({
       id: (Date.now() + 1).toString(),
       role: 'assistant',
-      content: `I understand you said: "${content}". This is a demo response.`,
-      timestamp: new Date()
+      content: `I understand you said: "${content}". This is a demo response.`
     })
+    
+    emit('update:messages', newMessages)
   } finally {
     isLoading.value = false
   }
 }
 
-// Add welcome message when component is mounted
-onMounted(() => {
-  messages.value.push({
-    id: Date.now().toString(),
-    role: 'assistant',
-    content: "👋 Hi there! I'm your AI assistant. I can help you with writing, analysis, coding, and more. Feel free to ask me anything!",
-    timestamp: new Date()
-  })
-})
-
 // Auto-scroll when new messages arrive
-watch(() => messages.value.length, scrollToBottom)
+watch(() => props.messages.length, scrollToBottom)
 </script>
 
 <style scoped>

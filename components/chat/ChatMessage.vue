@@ -7,7 +7,7 @@
     >
       <img 
         v-if="message.role === 'assistant'"
-        src="https://avatars.githubusercontent.com/u/142387426?s=200&v=4"
+        :src="getProviderAvatar"
         class="w-6 h-6 rounded"
         alt="Assistant"
       />
@@ -43,12 +43,19 @@ import { Icon } from '@iconify/vue'
 interface Message {
   role: 'user' | 'assistant'
   content: string
-  timestamp: Date
 }
 
-defineProps<{
+const props = defineProps<{
   message: Message
+  selectedModel?: string
 }>()
+
+const getProviderAvatar = computed(() => {
+  if (props.selectedModel?.includes('claude')) {
+    return 'https://avatars.githubusercontent.com/u/49760167?s=200&v=4'
+  }
+  return 'https://avatars.githubusercontent.com/u/142387426?s=200&v=4'
+})
 </script>
 
 <style scoped>
