@@ -31,32 +31,72 @@
       </div>
     </div>
 
-    <!-- Delivery Methods -->
+    <!-- Chat Notifications -->
     <div class="p-6 bg-neutral-50 rounded-xl border border-neutral-200">
-      <h2 class="text-lg font-semibold mb-4">Delivery Methods</h2>
+      <h2 class="text-lg font-semibold mb-4">Chat Notifications</h2>
       <div class="space-y-4">
-        <div v-for="method in deliveryMethods" :key="method.id"
-          class="flex items-center justify-between p-3 bg-white rounded-lg border border-neutral-200">
-          <div class="flex items-center gap-3">
-            <Icon :icon="method.icon" class="text-xl" />
-            <div>
-              <div class="font-medium">{{ method.name }}</div>
-              <div class="text-sm text-neutral-600">{{ method.value || 'Not set' }}</div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Message Preview</label>
+            <select v-model="chatSettings.preview" class="w-full rounded-lg border border-neutral-200 p-2">
+              <option value="full">Full Message</option>
+              <option value="partial">Partial Message</option>
+              <option value="sender">Sender Only</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Sound</label>
+            <select v-model="chatSettings.sound" class="w-full rounded-lg border border-neutral-200 p-2">
+              <option value="default">Default</option>
+              <option value="subtle">Subtle</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <BaseToggle
+            label="Show Typing Indicators"
+            v-model="chatSettings.typingIndicator"
+          />
+          <BaseToggle
+            label="Message Read Receipts"
+            v-model="chatSettings.readReceipts"
+          />
+          <BaseToggle
+            label="Mention Notifications"
+            v-model="chatSettings.mentions"
+          />
+          <BaseToggle
+            label="Group Chat Notifications"
+            v-model="chatSettings.groupChat"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Priority Users</label>
+          <div class="space-y-2">
+            <div v-for="user in priorityUsers" :key="user.id"
+              class="flex items-center justify-between p-2 bg-white rounded-lg border border-neutral-200">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center">
+                  <Icon icon="mdi:account" class="text-lg text-neutral-600" />
+                </div>
+                <span>{{ user.name }}</span>
+              </div>
+              <BaseToggle
+                v-model="user.priority"
+                :label="''"
+              />
             </div>
           </div>
-          <button 
-            class="text-primary-600 hover:text-primary-700 text-sm"
-            @click="editDeliveryMethod(method)"
-          >
-            {{ method.value ? 'Edit' : 'Add' }}
-          </button>
         </div>
       </div>
     </div>
 
-    <!-- Schedule -->
+    <!-- Delivery Schedule -->
     <div class="p-6 bg-neutral-50 rounded-xl border border-neutral-200">
-      <h2 class="text-lg font-semibold mb-4">Quiet Hours</h2>
+      <h2 class="text-lg font-semibold mb-4">Delivery Schedule</h2>
       <div class="space-y-4">
         <BaseToggle
           label="Enable Quiet Hours"
@@ -79,6 +119,21 @@
               type="time"
               class="w-full rounded-lg border border-neutral-200 p-2"
             />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Delivery Days</label>
+          <div class="grid grid-cols-7 gap-2">
+            <button
+              v-for="day in deliveryDays"
+              :key="day.value"
+              class="p-2 rounded-lg text-center text-sm"
+              :class="day.enabled ? 'bg-primary-100 text-primary-700' : 'bg-neutral-100 text-neutral-600'"
+              @click="day.enabled = !day.enabled"
+            >
+              {{ day.label }}
+            </button>
           </div>
         </div>
       </div>
@@ -117,29 +172,28 @@ const notifications = reactive([
   }
 ])
 
-const deliveryMethods = reactive([
-  {
-    id: 1,
-    name: 'Email',
-    icon: 'mdi:email',
-    value: 'john@example.com'
-  },
-  {
-    id: 2,
-    name: 'Push Notifications',
-    icon: 'mdi:bell',
-    value: 'Enabled'
-  },
-  {
-    id: 3,
-    name: 'SMS',
-    icon: 'mdi:message',
-    value: ''
-  }
+const chatSettings = reactive({
+  preview: 'partial',
+  sound: 'default',
+  typingIndicator: true,
+  readReceipts: true,
+  mentions: true,
+  groupChat: true
+})
+
+const priorityUsers = reactive([
+  { id: 1, name: 'John Doe', priority: true },
+  { id: 2, name: 'Jane Smith', priority: false },
+  { id: 3, name: 'Bob Johnson', priority: true }
 ])
 
-const editDeliveryMethod = (method: typeof deliveryMethods[0]) => {
-  // Implementation for editing delivery method
-  console.log('Edit delivery method:', method)
-}
+const deliveryDays = reactive([
+  { value: 'mon', label: 'M', enabled: true },
+  { value: 'tue', label: 'T', enabled: true },
+  { value: 'wed', label: 'W', enabled: true },
+  { value: 'thu', label: 'T', enabled: true },
+  { value: 'fri', label: 'F', enabled: true },
+  { value: 'sat', label: 'S', enabled: false },
+  { value: 'sun', label: 'S', enabled: false }
+])
 </script>

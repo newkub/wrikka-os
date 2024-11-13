@@ -15,7 +15,7 @@
       <div class="flex items-center gap-6 mb-6">
         <div class="relative">
           <img
-            :src="profile.avatar || 'https://via.placeholder.com/100'"
+            :src="profile.avatar || 'https://avatars.githubusercontent.com/u/142387426?s=200&v=4'"
             alt="Profile"
             class="w-24 h-24 rounded-xl object-cover"
           />
@@ -68,9 +68,9 @@
         <div>
           <label class="block text-sm font-medium mb-1">Time Zone</label>
           <select v-model="profile.timezone" class="w-full rounded-lg border border-neutral-200 p-2">
-            <option value="UTC+7">Bangkok (UTC+7)</option>
-            <option value="UTC+9">Tokyo (UTC+9)</option>
-            <option value="UTC+8">Singapore (UTC+8)</option>
+            <option v-for="tz in timeZones" :key="tz.value" :value="tz.value">
+              {{ tz.label }}
+            </option>
           </select>
         </div>
       </div>
@@ -109,9 +109,18 @@ const profile = reactive({
   lastName: 'Doe',
   email: 'john@example.com',
   bio: '',
-  avatar: '',
+  avatar: 'https://avatars.githubusercontent.com/u/142387426?s=200&v=4',
   timezone: 'UTC+7'
 })
+
+const timeZones = [
+  { value: 'UTC+7', label: 'Bangkok (UTC+7)' },
+  { value: 'UTC+8', label: 'Singapore (UTC+8)' },
+  { value: 'UTC+9', label: 'Tokyo (UTC+9)' },
+  { value: 'UTC', label: 'London (UTC)' },
+  { value: 'UTC-4', label: 'New York (UTC-4)' },
+  { value: 'UTC-7', label: 'San Francisco (UTC-7)' }
+]
 
 const connectedAccounts = reactive([
   {
@@ -134,6 +143,5 @@ const connectedAccounts = reactive([
     icon: 'mdi:discord',
     status: 'Connected as John#1234',
     connected: true
-  }
-])
+  } ])
 </script>
