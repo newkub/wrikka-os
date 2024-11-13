@@ -1,10 +1,12 @@
 <template>
   <div class="flex flex-col h-full">
-    <ChatMessageList 
-      :messages="messages"
-      :selected-model="selectedModel"
-    />
-    <div class="p-4 border-t border-neutral-200">
+    <div class="flex-1 overflow-y-auto min-h-0">
+      <ChatMessageList 
+        :messages="messages"
+        :selected-model="selectedModel"
+      />
+    </div>
+    <div class="flex-shrink-0 p-4 border-t border-neutral-200">
       <ChatNavBar
         :active-item="activeNavItem"
         :has-image="pastedImage !== null"
@@ -46,7 +48,6 @@ const pastedImage = ref<File | null>(null)
 
 const handleNavSelect = (id: string) => {
   activeNavItem.value = id
-  // Handle navigation item selection
 }
 
 const handleImagePaste = (file: File) => {

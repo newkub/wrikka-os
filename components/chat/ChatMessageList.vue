@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 overflow-y-auto p-6" ref="messagesRef">
+  <div class="p-6 h-full overflow-y-auto" ref="messagesRef">
     <div v-if="messages.length === 0" class="h-full flex items-center justify-center">
       <EmptyState />
     </div>
@@ -35,6 +35,8 @@ const scrollToBottom = () => {
 }
 
 watch(() => props.messages.length, scrollToBottom)
+
+onMounted(scrollToBottom)
 </script>
 
 <style scoped>

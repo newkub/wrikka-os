@@ -1,7 +1,7 @@
 <template>
-  <nav class="fixed left-0 top-0 h-screen w-20 bg-surface border-r border-border flex flex-col items-center py-4 overflow-hidden">
-    <!-- Fixed Logo Section -->
-    <div class="flex-shrink-0">
+  <nav class="fixed left-0 top-0 h-screen w-20 bg-surface border-r border-border flex flex-col py-4">
+    <!-- Logo Section -->
+    <div class="px-3 mb-4">
       <NuxtLink 
         to="/"
         class="w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors hover:bg-neutral-100"
@@ -12,9 +12,9 @@
       </NuxtLink>
     </div>
 
-    <!-- Scrollable Menu Section -->
-    <div class="flex-1 overflow-y-auto w-full px-3 my-4 scrollbar-thin">
-      <div class="flex flex-col items-center gap-4">
+    <!-- Main Menu -->
+    <div class="flex-1 px-3 overflow-y-auto scrollbar-hide">
+      <div class="space-y-4">
         <NuxtLink 
           v-for="item in menuItems" 
           :key="item.path"
@@ -29,19 +29,27 @@
       </div>
     </div>
     
-    <!-- Fixed Bottom Section -->
-    <div class="flex-shrink-0 flex flex-col items-center gap-4">
-      <NuxtLink 
-        v-for="item in bottomMenuItems" 
-        :key="item.path"
-        :to="item.path"
-        class="w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors hover:bg-neutral-100"
-        :class="{ 'bg-neutral-200': route.path === item.path }"
-        active-class="bg-neutral-200"
-      >
-        <Icon :icon="item.icon" class="text-2xl text-neutral-700" />
-        <span class="text-xs font-medium text-neutral-700">{{ item.label }}</span>
-      </NuxtLink>
+    <!-- Bottom Menu with Scroll Indicator -->
+    <div class="px-3 relative">
+      <!-- Scroll Indicator -->
+      <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-1 h-4 flex justify-center">
+        <div class="w-0.5 h-full bg-neutral-200 rounded-full opacity-50"></div>
+      </div>
+
+      <!-- Bottom Menu Items -->
+      <div class="space-y-4">
+        <NuxtLink 
+          v-for="item in bottomMenuItems" 
+          :key="item.path"
+          :to="item.path"
+          class="w-14 h-14 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors hover:bg-neutral-100"
+          :class="{ 'bg-neutral-200': route.path === item.path }"
+          active-class="bg-neutral-200"
+        >
+          <Icon :icon="item.icon" class="text-2xl text-neutral-700" />
+          <span class="text-xs font-medium text-neutral-700">{{ item.label }}</span>
+        </NuxtLink>
+      </div>
     </div>
   </nav>
 </template>
@@ -67,30 +75,17 @@ const bottomMenuItems = [
 </script>
 
 <style scoped>
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: #E5E7EB transparent;
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: #E5E7EB;
-  border-radius: 2px;
-}
-
-/* Hide scrollbar when not hovering */
-.scrollbar-thin:not(:hover)::-webkit-scrollbar-thumb {
-  background-color: transparent;
-}
-
-.scrollbar-thin:not(:hover) {
-  scrollbar-color: transparent transparent;
+/* Hover effect for scroll indicator */
+.scrollbar-hide:hover + .scroll-indicator {
+  opacity: 1;
 }
 </style>
