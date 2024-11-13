@@ -5,10 +5,18 @@
       :selected-model="selectedModel"
     />
     <div class="p-4 border-t border-neutral-200">
+      <ChatNavBar
+        :active-item="activeNavItem"
+        :has-image="pastedImage !== null"
+        @select="handleNavSelect"
+        class="mb-4"
+      />
       <ChatInput
         v-model="inputMessage"
         :loading="isLoading"
+        :has-content="!!inputMessage.trim()"
         @send="handleSend"
+        @paste-image="handleImagePaste"
       />
     </div>
   </div>
@@ -32,6 +40,18 @@ const emit = defineEmits<{
 
 const inputMessage = ref('')
 const isLoading = ref(false)
+const activeNavItem = ref('prompt')
+const pastedImage = ref<File | null>(null)
+
+const handleNavSelect = (id: string) => {
+  activeNavItem.value = id
+  // Handle navigation item selection
+}
+
+const handleImagePaste = (file: File) => {
+  pastedImage.value = file
+  activeNavItem.value = 'file'
+}
 
 const handleSend = async (content: string) => {
   const newMessages = [...props.messages]

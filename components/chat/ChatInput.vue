@@ -1,44 +1,42 @@
 <template>
   <div class="relative">
-    <!-- Action buttons -->
-    <div class="absolute left-2 top-4 flex items-center gap-1">
-      <button
-        class="p-2 rounded-lg text-neutral-400 hover:text-primary-base hover:bg-neutral-100 transition-colors"
-        title="Upload files"
-      >
-        <Icon icon="mdi:upload" class="text-xl" />
-      </button>
-      <button
-        class="p-2 rounded-lg text-neutral-400 hover:text-primary-base hover:bg-neutral-100 transition-colors"
-        title="Search"
-      >
-        <Icon icon="mdi:magnify" class="text-xl" />
-      </button>
-    </div>
-
     <textarea
       ref="inputRef"
       v-model="inputValue"
       rows="3"
-      class="w-full bg-neutral-50 rounded-xl pl-20 pr-12 py-4 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-base resize-none overflow-y-auto"
+      class="w-full bg-neutral-50 rounded-xl px-4 py-4 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-base resize-none overflow-y-auto"
       :class="{ 'opacity-50': disabled }"
       placeholder="Type a message... (Enter to send, Shift + Enter for new line)"
       @input="adjustHeight"
       @keydown="handleKeydown"
+      @paste="handlePaste"
       :disabled="disabled"
     />
     
-    <button
-      class="absolute right-2 top-4 p-2 rounded-lg text-neutral-400 hover:text-primary-base hover:bg-neutral-100 transition-colors disabled:opacity-50 disabled:hover:bg-transparent"
-      :disabled="!canSend"
-      @click="sendMessage"
-    >
-      <Icon 
-        :icon="loading ? 'mdi:loading' : 'mdi:send'" 
-        class="text-xl"
-        :class="{ 'animate-spin': loading }"
-      />
-    </button>
+    <div class="absolute right-2 top-4 flex items-center gap-2">
+      <button
+        class="p-2 rounded-lg text-neutral-400 hover:text-primary-base hover:bg-neutral-100 transition-colors"
+        title="Voice input"
+        @click="handleVoiceInput"
+      >
+        <Icon icon="mdi:microphone" class="text-xl" />
+      </button>
+      <button
+        class="p-2 rounded-lg transition-colors disabled:opacity-50 disabled:hover:bg-transparent"
+        :class="[
+          hasContent ? 'text-primary-600 hover:text-primary-700' : 'text-neutral-400 hover:text-primary-base',
+          'hover:bg-neutral-100'
+        ]"
+        :disabled="!canSend"
+        @click="sendMessage"
+      >
+        <Icon 
+          :icon="loading ? 'mdi:loading' : 'mdi:send'" 
+          class="text-xl"
+          :class="{ 'animate-spin': loading }"
+        />
+      </button>
+    </div>
   </div>
 </template>
 
@@ -50,14 +48,17 @@ const props = withDefaults(defineProps<{
   modelValue: string
   loading?: boolean
   disabled?: boolean
+  hasContent?: boolean
 }>(), {
   loading: false,
-  disabled: false
+  disabled: false,
+  hasContent: false
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
   'send': [message: string]
+  'paste-image': [file: File]
 }>()
 
 const inputRef = ref<HTMLTextAreaElement>()
@@ -94,6 +95,25 @@ const handleKeydown = (event: KeyboardEvent) => {
       adjustHeight()
     })
   }
+}
+
+const handlePaste = (event: ClipboardEvent) => {
+  const items = event.clipboardData?.items
+  if (!items) return
+
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      const file = item.getAsFile()
+      if (file) {
+        event.preventDefault()
+        emit('paste-image', file)
+      }
+    }
+  }
+}
+
+const handleVoiceInput = () => {
+  // Voice input logic will be implemented here
 }
 
 const sendMessage = () => {
