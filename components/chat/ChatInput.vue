@@ -7,11 +7,49 @@
       class="w-full bg-neutral-50 rounded-xl px-4 py-4 text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-base resize-none overflow-y-auto"
       :class="{ 'opacity-50': disabled }"
       placeholder="Type a message... (Enter to send, Shift + Enter for new line)"
-      @input="adjustHeight"
+      @input="handleInput"
       @keydown="handleKeydown"
       @paste="handlePaste"
       :disabled="disabled"
     />
+    
+    <!-- Slash Commands Menu -->
+    <div v-if="showSlashCommands" 
+      class="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-lg shadow-lg border border-neutral-200 max-h-64 overflow-y-auto">
+      <div class="p-2">
+        <div v-for="command in filteredCommands" 
+          :key="command.id"
+          class="flex items-center gap-2 p-2 hover:bg-neutral-50 rounded-lg cursor-pointer"
+          @click="selectCommand(command)"
+        >
+          <Icon :icon="command.icon" class="text-lg text-neutral-600" />
+          <div>
+            <div class="font-medium">{{ command.label }}</div>
+            <div class="text-xs text-neutral-500">{{ command.description }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mention Menu -->
+    <div v-if="showMentions"
+      class="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-lg shadow-lg border border-neutral-200 max-h-64 overflow-y-auto">
+      <div class="p-2">
+        <div v-for="user in filteredUsers" 
+          :key="user.id"
+          class="flex items-center gap-2 p-2 hover:bg-neutral-50 rounded-lg cursor-pointer"
+          @click="selectUser(user)"
+        >
+          <div class="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center">
+            <Icon icon="mdi:account" class="text-lg text-neutral-600" />
+          </div>
+          <div>
+            <div class="font-medium">{{ user.name }}</div>
+            <div class="text-xs text-neutral-500">{{ user.role }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <div class="absolute right-2 top-4 flex items-center gap-2">
       <button
@@ -42,7 +80,8 @@
 
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -67,21 +106,95 @@ const inputValue = computed({
   set: (value) => emit('update:modelValue', value)
 })
 
+const showSlashCommands = ref(false)
+const showMentions = ref(false)
+const commandSearch = ref('')
+const mentionSearch = ref('')
+
+const commands = [
+  { id: 'translate', label: 'Translate', icon: 'mdi:translate', description: 'Translate text to another language' },
+  { id: 'enhance', label: 'Enhance', icon: 'mdi:lightbulb', description: 'Enhance your writing' },
+  { id: 'summarize', label: 'Summarize', icon: 'mdi:text', description: 'Create a summary' }
+]
+
+const users = [
+  { id: '1', name: 'John Doe', role: 'Developer' },
+  { id: '2', name: 'Jane Smith', role: 'Designer' },
+  { id: '3', name: 'Bob Johnson', role: 'Manager' }
+]
+
+const filteredCommands = computed(() => {
+  if (!commandSearch.value) return commands
+  return commands.filter(cmd => 
+    cmd.label.toLowerCase().includes(commandSearch.value.toLowerCase()) ||
+    cmd.description.toLowerCase().includes(commandSearch.value.toLowerCase())
+  )
+})
+
+const filteredUsers = computed(() => {
+  if (!mentionSearch.value) return users
+  return users.filter(user => 
+    user.name.toLowerCase().includes(mentionSearch.value.toLowerCase()) ||
+    user.role.toLowerCase().includes(mentionSearch.value.toLowerCase())
+  )
+})
+
 const canSend = computed(() => 
   inputValue.value.trim().length > 0 && !props.loading && !props.disabled
 )
 
+const handleInput = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement
+  const value = target.value
+  const lastChar = value[target.selectionStart - 1]
+  
+  if (lastChar === '/') {
+    showSlashCommands.value = true
+    showMentions.value = false
+    commandSearch.value = ''
+  } else if (lastChar === '@') {
+    showMentions.value = true
+    showSlashCommands.value = false
+    mentionSearch.value = ''
+  } else {
+    // Update search terms if menus are open
+    if (showSlashCommands.value) {
+      const slashIndex = value.lastIndexOf('/')
+      if (slashIndex >= 0) {
+        commandSearch.value = value.slice(slashIndex + 1)
+      }
+    }
+    if (showMentions.value) {
+      const mentionIndex = value.lastIndexOf('@')
+      if (mentionIndex >= 0) {
+        mentionSearch.value = value.slice(mentionIndex + 1)
+      }
+    }
+  }
+  
+  adjustHeight()
+}
+
+const selectCommand = (command: typeof commands[0]) => {
+  const text = inputValue.value
+  const lastSlashIndex = text.lastIndexOf('/')
+  inputValue.value = text.slice(0, lastSlashIndex) + `/${command.label} `
+  showSlashCommands.value = false
+}
+
+const selectUser = (user: typeof users[0]) => {
+  const text = inputValue.value
+  const lastMentionIndex = text.lastIndexOf('@')
+  inputValue.value = text.slice(0, lastMentionIndex) + `@${user.name} `
+  showMentions.value = false
+}
+
 const adjustHeight = () => {
   if (!inputRef.value) return
   
-  // Reset height to auto to get the correct scrollHeight
   inputRef.value.style.height = 'auto'
-  
-  // Calculate new height (minimum 3 lines)
-  const minHeight = 96 // 3 lines (24px line-height * 3 + padding)
+  const minHeight = 96
   const newHeight = Math.max(minHeight, inputRef.value.scrollHeight)
-  
-  // Set new height
   inputRef.value.style.height = `${newHeight}px`
 }
 
@@ -90,10 +203,12 @@ const handleKeydown = (event: KeyboardEvent) => {
     event.preventDefault()
     sendMessage()
   } else if (event.key === 'Enter' && event.shiftKey) {
-    // Let the newline be added and adjust height
     nextTick(() => {
       adjustHeight()
     })
+  } else if (event.key === 'Escape') {
+    showSlashCommands.value = false
+    showMentions.value = false
   }
 }
 
@@ -124,7 +239,7 @@ const sendMessage = () => {
   
   nextTick(() => {
     if (inputRef.value) {
-      inputRef.value.style.height = '96px' // Reset to minimum height
+      inputRef.value.style.height = '96px'
     }
   })
 }
@@ -135,12 +250,18 @@ onMounted(() => {
     adjustHeight()
   }
 })
+
+// Close menus when clicking outside
+onClickOutside(inputRef, () => {
+  showSlashCommands.value = false
+  showMentions.value = false
+})
 </script>
 
 <style scoped>
 textarea {
-  min-height: 96px; /* 3 lines */
-  max-height: 400px; /* Maximum height before scrolling */
+  min-height: 96px;
+  max-height: 400px;
   line-height: 1.5;
 }
 
@@ -157,7 +278,6 @@ textarea::-webkit-scrollbar-thumb {
   border-radius: 2px;
 }
 
-/* Firefox scrollbar styling */
 textarea {
   scrollbar-width: thin;
   scrollbar-color: #E5E7EB transparent;

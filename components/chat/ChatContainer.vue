@@ -9,6 +9,7 @@
         :active-item="activeNavItem"
         :has-image="pastedImage !== null"
         @select="handleNavSelect"
+        @remove-image="handleRemoveImage"
         class="mb-4"
       />
       <ChatInput
@@ -40,7 +41,7 @@ const emit = defineEmits<{
 
 const inputMessage = ref('')
 const isLoading = ref(false)
-const activeNavItem = ref('prompt')
+const activeNavItem = ref('enhance')
 const pastedImage = ref<File | null>(null)
 
 const handleNavSelect = (id: string) => {
@@ -51,6 +52,11 @@ const handleNavSelect = (id: string) => {
 const handleImagePaste = (file: File) => {
   pastedImage.value = file
   activeNavItem.value = 'file'
+}
+
+const handleRemoveImage = () => {
+  pastedImage.value = null
+  activeNavItem.value = 'enhance'
 }
 
 const handleSend = async (content: string) => {
