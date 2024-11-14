@@ -65,6 +65,7 @@ const menuItems = [
   { path: '/videos', label: 'Videos', icon: 'mdi:video' },
   { path: '/bots', label: 'Bots', icon: 'mdi:robot-industrial' },
   { path: '/canvas', label: 'Canvas', icon: 'mdi:brush' },
+  { path: '/knowledge', label: 'Knowledge', icon: 'mdi:brain' },
   { path: '/bookmark', label: 'Bookmark', icon: 'mdi:bookmark' }
 ]
 

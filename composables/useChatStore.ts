@@ -1,23 +1,10 @@
-import { ref, computed } from 'vue'
-import type { ChatMessage, ChatSettings } from '~/types/chat'
+import { ref } from 'vue'
+import type { ChatMessage } from '~/types/chat'
 
-export const useChat = (options: { initialMessages?: ChatMessage[] } = {}) => {
-  const messages = ref<ChatMessage[]>(options.initialMessages || [])
+export const useChatStore = () => {
+  const messages = ref<ChatMessage[]>([])
   const isLoading = ref(false)
-  const isFirstLoad = ref(true)
-
-  const settings = ref<ChatSettings>({
-    model: 'claude-3-haiku',
-    customName: '',
-    customInstructions: '',
-    temperature: 1.00,
-    topP: 1.00,
-    frequencyPenalty: 0.00,
-    presencePenalty: 0.00,
-    stream: true
-  })
-
-  const hasMessages = computed(() => messages.value.length > 0)
+  const hasApiKey = ref(false)
 
   const addMessage = (content: string, isBot: boolean) => {
     messages.value.push({
@@ -67,31 +54,13 @@ export const useChat = (options: { initialMessages?: ChatMessage[] } = {}) => {
 
   const clearMessages = () => {
     messages.value = []
-    isFirstLoad.value = true
-  }
-
-  const showWelcomeMessage = () => {
-    if (isFirstLoad.value) {
-      addMessage(
-        `# Welcome to Wrikka OS Chat! 👋\n\nI'm your AI assistant. I'm here to help you with:\n\n` +
-        "- Writing and analysis\n" +
-        "- Research and information\n" +
-        "- Programming and technical tasks\n" +
-        "- Creative projects\n\n" +
-        "Feel free to ask me anything. How can I assist you today?",
-        true
-      )
-      isFirstLoad.value = false
-    }
   }
 
   return {
     messages,
-    settings,
     isLoading,
-    hasMessages,
+    hasApiKey,
     sendMessage,
-    clearMessages,
-    showWelcomeMessage
+    clearMessages
   }
 }

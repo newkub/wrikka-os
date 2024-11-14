@@ -1,6 +1,6 @@
 import type { Model, Provider } from '~/types/models'
 
-export const useModelSelector = () => {
+export const useModelStore = () => {
   const isDropdownOpen = ref(false)
   const deploymentType = ref('Cloud')
   const searchQuery = ref('')
@@ -13,8 +13,7 @@ export const useModelSelector = () => {
       models: [
         { id: 'claude-3-haiku', name: 'Claude 3 Haiku' },
         { id: 'claude-3-opus', name: 'Claude 3 Opus' },
-        { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet' },
-        { id: 'claude-3.5-sonnet', name: 'Claude 3.5 Sonnet' }
+        { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet' }
       ]
     },
     {
@@ -28,6 +27,8 @@ export const useModelSelector = () => {
       ]
     }
   ]
+
+  const selectedModel = ref(providers[0].models[0].id)
 
   const filteredProviders = computed(() => {
     if (!searchQuery.value) return providers
@@ -48,12 +49,18 @@ export const useModelSelector = () => {
     return 'Select a model'
   }
 
+  const getProviderByModel = (modelId: string) => {
+    return providers.find(provider => 
+      provider.models.some(model => model.id === modelId)
+    )
+  }
+
   return {
-    isDropdownOpen,
-    deploymentType,
-    searchQuery,
     providers,
+    selectedModel,
+    searchQuery,
     filteredProviders,
-    getModelName
+    getModelName,
+    getProviderByModel
   }
 }
